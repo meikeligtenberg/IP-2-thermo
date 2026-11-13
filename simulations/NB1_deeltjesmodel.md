@@ -11,7 +11,7 @@ De basis van een goede computer simulatie ligt, net als bij het oplossen van een
 ```{exercise}
 Als startopdracht modelleren we twee fietsers. Doorloop de bovenstaande drie stappen. 
 ```
-
+![WhatsApp Image 2026-11-13 at 16.55.06.jpeg](attachment:4b6f12b4-2807-4fb7-8638-23b792778cad.jpeg)
 
 
 
@@ -357,7 +357,7 @@ Met de MyST extentie in jupyterlab kun je gebruik maken van [eval](https://mystm
 ```
 
 ```{solution} ex-intro-3
-The phrase manually computed is: {eval}'lengte_s'
+De alternatieve methode is zoveel seconde sneller: {eval}`lengte - lengte_s`.
 ```
 
 
