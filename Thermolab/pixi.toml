@@ -1,0 +1,10 @@
+[workspace]
+authors = ["JDebetz <J.Debetz@student.tudelft.nl>"]
+channels = ["conda-forge"]
+name = "Thermolab"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]

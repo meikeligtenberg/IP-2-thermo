@@ -48,7 +48,10 @@ Als model gaan we uit van een deel van het volume van een fietsband die onder ee
 ```
 
 ```{solution} ex-recap-1
-### YOUR CODE HERE ###
+### 
+V_m = k_B * T / p = 1,380 649x10^−23 * (21+273) / 10x10^5 = 4.0572x10^-27 m^3
+rubbe kubus = (4.0572x10^-27)^1/3 = 1,6x10^-9 m = 1,6 nm
+###
 ```
 
 De simulatie die we gaan maken bevat maar twee dimensies. We kunnen het oppervlak per deeltje in deze simulatie daarom kiezen als het zojuist berekende $V_\text{molecuul}^{2/3}$.
@@ -68,7 +71,10 @@ Ook deze heb je hierna nodig.
 ```
 
 ```{solution} ex-recap-2
-### YOUR CODE HERE ###
+### 
+1/2 * 4,6566x10^-26 * v^2 = 2/2 * 1,380 649x10−23 * (21+273)          (m=4,6566x10^-26 , massa stikstofmolecuul, meest voorkomende molecuul in lucht)
+geeft v = 4x10^2 m/s
+###
 ```
 
 ```{exercise} Radius
@@ -77,7 +83,9 @@ In de python cell hieronder staan enkele waarden gegeven. Het aantal deeltjes $N
 ```
 
 ```{solution} ex-recap-3
-### YOUR CODE HERE ###
+### 
+antwoornd exercize 4 : v0*DT=1*0.03=0.03 dat is veel kleiner dan de straal (RADIUS=0.3) waardoor hij tussen twee frames een afstand kleiner dan de straal aflegd en er geen botsing gemist kan worden.
+###
 ```
 
 ```{exercise} DT
@@ -88,11 +96,12 @@ Bekijk de waarde van `DT`. Hoe zorgt deze waaarde ervoor dat het onwaarschijnlij
 Onze simulatie modelleert dus een klein systeem zonder rekening te houden met de kracht tussen de luchtmoleculen. Je zult zien dat we toch al behoorlijk wat van de processor vragen om deze berekeningen te doen. Om een meer realistische modelsimulatie te maken is daarom een serieuze uitdaging, die veel wiskunde en programmeerervaring vraagt. Op dit ogenblik wordt dit bijvoorbeeld gevraagd bij een van de eerste opdrachten van het vak 'Computational Physics' van de master Applied Physics. 
 
 ```python tags=["NB2_init"] editable=true slideshow={"slide_type": ""}
-BOX_SIZE_0 = 10                # Hoogte en lengte startvolume
-N = 40                         # Aantal deeltjes
-V_0 = 1                        # Startsnelheid van deeltjes
-RADIUS = 0.3                   # Straal van moleculen
-DT = 0.1 * RADIUS / V_0        # Tijdstap om geen botsing te missen
+BOX_SIZE_0 = 10                # Hoogte en lengte startvolume (m)
+N = 40                         # Aantal deeltjes (-)
+V_0 = 1                        # Startsnelheid van deeltjes (m/s)
+RADIUS = 0.3                   # Straal van moleculen (m)
+DT = 0.1 * RADIUS / V_0        # Tijdstap om geen botsing te missen (s)
+print(DT)
 ```
 
 ### Particle class
@@ -183,8 +192,14 @@ Leg uit dat d.m.v. onderstaande code de deeltjes allemaal dezelfde snelheid hebb
 ```
 
 ```{solution} ex-recap-5
-Jouw antwoord hier...
-### YOUR CODE HERE ###
+
+### 
+vy wordt zo gekozen dat:
+vx^2 +vy^2 = v0^2\
+dit gebeurt doordat de vx^2<v0^2 en de grootte van vy is 1 * sqrt(v0^2-vx^2)\
+dus de grootte van de snelheid van elk deeltje is v0\
+ze zijn uniform verdeeld,omdat de posities worden gegenereerd met np.random.uniform die uniform verdeelde waarden kiest, alle deeltjes zijn dus gelijk over de box verdeeld
+###
 ```
 
 ```python tags=["NB2_init"] editable=true slideshow={"slide_type": ""}
@@ -209,8 +224,9 @@ Leg uit hoe er in onderstaande code wordt voorkomen dat de botsing tussen twee d
 ```
 
 ```{solution} ex-recap-6
-Jouw antwoord hier...
-### YOUR CODE HERE ###
+### 
+Omdat J altijd bij 1 hoger begint dan I gaat hij voor elk deeltje met een hogere index dan I kijken of hij botst met het deeltje met index i en niet met deeltje met een lagere index, dit zorgt ervoor dat als deeltje met i=1 gebotst heeft met deeltje i=3, bij het bekijken van deeltje i=3 de botsing tussen i=1 en i=3 niet wordt uitgevoerd. De botsing wordt dus maar 1 keer wordt uitgevoerd.
+###
 ```
 
 ```python editable=true slideshow={"slide_type": ""} tags=["NB2_init"]
@@ -319,10 +335,22 @@ create_particles(particles)
 for i in range(100):
     take_time_step(particles)
     # voeg de som van de kinetische energie in deze stap toe aan energy_tot 
-    ### YOUR CODE HERE ###
+    ### 
+    energy_kin = []
+    for p in particles:
+        energy_kin.append(0.5*p.m*(p.v[0]**2+p.v[1]**2))
+    energy_tot.append(sum(energy_kin))
+    ###
 
 # plot de figuur van de kinetische energie als functie van de tijd. 
+plt.figure()
+plt.plot(np.arange(0,100,1)*DT,energy_tot,'.')
+plt.xlabel('$t$(s)')
+plt.ylabel('$K$(J)')
+plt.ylim(19.9,20.1)
+plt.show()
 ### YOUR CODE HERE ###
+#print(energy_tot)
 ```
 
 ```{exercise} 
@@ -331,8 +359,9 @@ Als je heel nauwkeurig naar de waarde voor de totale kinetische energie kijkt, d
 ```
 
 ```{solution} ex-recap-8
-Jouw antwoord hier...
-### YOUR CODE HERE ###
+### 
+De energieschaal waarop de kinetische energie varieert is picojoules. Dit komt omdat de compiuter per tijdstap DT rekent en dat is altijd een benadering.
+###
 ```
 
 
@@ -364,6 +393,72 @@ Maak een script waarbij twee deeltjes met dezelfde (absolute) snelheid op een de
 - Voor wie een uitdaging wil: maak een grafiek met het aantal botsingen per tijdseenheid. Dit om bovenstaande benadering verder te verantwoorden.
 ```
 
+
+def handle_collisions(particles):\                                      
+    ignore_list = []                                                 Aanmaken lege lijst\
+    for i, p1 in enumerate(particles):                               index i en eigenschappen worden per deeltje uit particles gehaald\
+        if p1 in ignore_list:                                        als het deeltje in ignore list zit word er naar het volgende deeltje gekeken,\
+            continue                                                     omdat hij dan al een botsing heeft ondergaan\
+        for j, p2 in enumerate(particles):                          om de beurt naar alle indexen en bijbehorende eigenschappen van deeltjes kijken\                                                                          en vergelijken met deeltje i\
+            if p1 is p2:                                             als hij naar twee dezelfde deeltjes kijkt gaat hij verder met de volgende\
+                continue                \
+            if collide_detection(particles[i], particles[j]):        als het twee deeltjes zijn die nog niet eerder hebben gebotst en niet hetzelfe\
+                particle_collision(particles[i], particles[j])           gaat hij kijken of ze botsen en voert hij een botsting uit\
+                ignore_list.append(p2) \
+Er vindt één botsing plaats, maar er worden er twee berekend, omdat maar twee deeltjes tegelijk met elkaar botsen volgens het script omdat deze twee deeltjes met elkaar vergelijkt en de snelheiden voor die deeltjes aanpast voor naar het tweede deel van de 3-botsing te kijken.
+Bij veel botsingen per tijdseenheid is het een goede benadering, om een botsing drie deeltje maar 1 keer te tellen, dat scheelt rekenwerk
+
+```python
+#particles = []
+#particles.append(ParticleClass(m=1,v=[-1,0],r=[-1,0],R=RADIUS))
+#particles.append(ParticleClass(m=1,v=[1,0],r=[1,0],R=RADIUS))
+#particles.append(ParticleClass(m=1,v=[0,0],r=[0,0],R=RADIUS))
+
+def create_particles(particles):
+    ''' Leegmaken en opnieuw aanmaken van deeltjes '''
+    particles = np.array([])
+    particles = np.append(particles,ParticleClass(m=1,v=[1,0],r=[-1,0],R=RADIUS))
+    particles = np.append(particles,ParticleClass(m=1,v=[0,-1],r=[0,1],R=RADIUS))
+    particles = np.append(particles,ParticleClass(m=1,v=[0,0],r=[0,0],R=RADIUS))
+    return particles
+
+def handle_collisions(particles):
+    ignore_list = []
+    for i, p1 in enumerate(particles):
+        if p1 in ignore_list:
+            continue
+        for j, p2 in enumerate(particles):
+            if p1 is p2:
+                continue                
+            if collide_detection(particles[i], particles[j]):
+                particle_collision(particles[i], particles[j])
+                ignore_list.append(p2)
+                print('De deeltjes die met elkaar botsen hebben indexen:',i,j)
+
+particles = create_particles(particles)
+
+print(particles)
+
+fig, ax = plt.subplots()
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+ax.set_xlim(-BOX_SIZE_0/2, BOX_SIZE_0/2)
+ax.set_ylim(-BOX_SIZE_0/2, BOX_SIZE_0/2)
+ax.set_aspect('equal')
+dot, = ax.plot([], [], 'ro', ms=13);
+
+def init():
+    dot.set_data([], [])
+    return dot,
+
+def update(frame):
+    take_time_step(particles)
+    dot.set_data([p.r[0] for p in particles], [p.r[1] for p in particles])
+    return dot,
+
+ani = FuncAnimation(fig, update, frames=100, init_func=init, blit=True, interval=50)
+HTML(ani.to_jshtml())
+```
 
 ````{tip} Nog sneller
 Er is een manier om je script nog sneller te maken. 
@@ -508,7 +603,7 @@ for i in range(N-1):
     pos = Box_length_0*np.random.uniform(-1,1,2)
     particles.append(ParticleClass(m=1.0, v=[vx, vy], r = pos, R=.5,c='blue')) 
 
-particles.append(ParticleClass(m=20.0, v=[0, 0], r = [0, 0], R=.5,c='red')) 
+particles.append(ParticleClass(m=20.0, v=[0, 0], r = [0, 0], R=.5,c='red')) #toevoegen pol 
 
 ```
 
@@ -520,7 +615,9 @@ Voeg voor deze regel goede metadata toe.
 ```
 
 ```{solution} ex-brownian-1
-### YOUR CODE HERE ###
+### 
+Er wordt een groter en zwaarder deeltje toegevoegd dat startsnelheid 0 heeft, dit is de pol die in het water beland
+###
 ```
 
 
@@ -543,9 +640,9 @@ plt.ylim(-Box_length_0,Box_length_0)
 
 for particle, particle_object in enumerate(particles):
     plt.plot(particle_object.r[0],particle_object.r[1],color=particle_object.c,marker='.')
-    # plt.arrow(particle_object.r[0],particle_object.r[1], 
-    #           particle_object.v[0],particle_object.v[1], 
-    #           head_width=0.05, head_length=0.1, color='red')
+    plt.arrow(particle_object.r[0],particle_object.r[1], 
+            particle_object.v[0],particle_object.v[1], 
+            head_width=0.05, head_length=0.1, color='red')
 plt.show()
 
 ```
@@ -559,7 +656,12 @@ Hoe wordt er voor gezorgd dat de snelheid van elk deeltje gelijk is?
 ```
 
 ```{solution} ex-brownian-2
-### YOUR CODE HERE ###
+### 
+Hij laat zien waar de deeltjes beginnen en heen gaan.
+vy wordt zo gekozen dat: vx^2 +vy^2 = v_0^2
+dit gebeurt doordat de vx^2<v_0^2 en de grootte van vy is 1 * sqrt(v0^2-vx^2)
+dus de grootte van de snelheid van elk deeltje is v_0
+###
 ```
 
 We gaan nu de functies van de simulatie weer aanroepen:
@@ -589,14 +691,19 @@ def particle_collision(p1: ParticleClass, p2: ParticleClass):
     p2.v += 2 * m1 / (m1 + m2) * dot_product / distance_squared * delta_r
 
 def handle_collisions(particles):
-    ### YOUR CODE HERE ###
+    ### 
+    global counter
+    ###
     """ alle onderlinge botsingen afhandelen voor deeltjes in lijst """
     num_particles = len(particles)
     for i in range(num_particles):
         for j in range(i+1, num_particles):
             if collide_detection(particles[i], particles[j]):
                 particle_collision(particles[i], particles[j])
-                ### YOUR CODE HERE ###
+                ### 
+                counter += 1
+    return counter
+                ###
 
 ```
 
@@ -607,12 +714,20 @@ In onderstaande code geven we de code voor de simulatie en volgen we de positie 
 track_x = []
 track_y = []
 
-### YOUR CODE HERE ###
+### 
+track_x2 = []
+track_y2 = []
+###
 
-### YOUR CODE HERE ###
+### 
+array_counter = np.array([])
+counter = 0
+###
 
 for i in range(400):
-    ### YOUR CODE HERE ###
+    ### 
+    
+    ###
     
     for p in particles:        
         p.update_position()    # Update positie        
@@ -620,16 +735,26 @@ for i in range(400):
         
     handle_collisions(particles)
 
-    ### YOUR CODE HERE ###
+    ### 
+    array_counter = np.append(array_counter,counter)
+    ###
     
     track_x.append(particles[N-1].r[0])
     track_y.append(particles[N-1].r[1])
     
-### YOUR CODE HERE ###
+### 
+    track_x2.append(particles[0].r[0])
+    track_y2.append(particles[0].r[1])
+###
 
 plt.figure()
-plt.plot(track_x,track_y,'r')
-### YOUR CODE HERE ###
+plt.plot(track_x,track_y,'r',label='pol')
+### 
+plt.plot(track_x2,track_y2,'b',label='waterdeeltje')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+###
 plt.show()
 ```
 
@@ -728,7 +853,12 @@ ani.save("deeltjes.gif", writer="pillow", fps=20)
 ```
 
 ```{solution} ex-brownian-3
-### YOUR CODE HERE ###
+### 
+Waterdeeltje beweegt sneller en wordt meer beinvloed door de botsingen waardoor hij vaker van richting veranderd.
+Ze veranderen allebei van richting
+
+Hij laat steeds een andere weg zien.
+###
 ```
 
 
@@ -742,7 +872,15 @@ Plot hieronder het aantal botsingen als functie van de tijd.
 ```
 
 ```python
-### YOUR CODE HERE ###
+### 
+plt.figure()
+plt.plot(np.arange(0,400,1)*dt,array_counter,'-')
+plt.xlabel('tijd(seconde)')
+plt.ylabel('aantal botsingen')
+plt.xlim(0,16)
+plt.ylim(0,600)
+plt.show()
+###
 ```
 
 ```{warning} 🌶 Let op!
