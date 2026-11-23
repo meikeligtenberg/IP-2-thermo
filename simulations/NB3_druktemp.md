@@ -33,11 +33,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-BOX_SIZE_0 = 10                # Hoogte en lengte startvolume
+BOX_SIZE_0 = 10                # Hoogte en lengte startvolume (nm)
 N = 40                         # Aantal deeltjes
-V_0 = 1                        # Startsnelheid van deeltjes
-RADIUS = 0.3                   # Straal van moleculen
-DT = 0.1 * RADIUS / V_0        # Tijdstap om geen botsing te missen
+V_0 = 1                        # Startsnelheid van deeltjes (nm per ps)
+RADIUS = 0.3                   # Straal van moleculen (nm)
+DT = 0.1 * RADIUS / V_0        # Tijdstap om geen botsing te missen (ps)
 ```
 
 <!-- #region tags=[] -->
@@ -223,8 +223,19 @@ Schrijf een functie die de temperatuur van het gas in onze simulatie bepaalt:
 ```python tags=["NB3_tempfun"]
 def temperature(particles) -> float:
     temp = 0.0 
-    ### YOUR CODE HERE ###
+    ###
+    k = 1.380649e-23
+    v2_tot = 0
+    m_tot = 0
+    for p in range(len(particles)):
+        v2_tot += sum((particles[p].v*(10**3))**2) 
+        m_tot += particles[p].m*(10**-26)
+    v2_gem = v2_tot/len(particles)
+    m_gem = m_tot/len(particles)
+    temp = (v2_gem*m_gem)/(2*k)
+    ###
     return temp
+temperature(particles)
 ```
 
 <!-- #region tags=[] -->
@@ -246,13 +257,17 @@ create_particles(particles)
 for i in range(100):
     take_time_step(particles)
     # vastleggen van temperatuur per tijdstap
-    ### YOUR CODE HERE ###
+    ### 
+    temperatures[i] = temperature(particles)
+    ###
 
 plt.figure()
-plt.xlabel('Time')
-plt.ylabel('Temperature')
+plt.xlabel('Time (s)')
+plt.ylabel('Temperature (K)')
 # plotten van tijd tegen temperatuur
-### YOUR CODE HERE ###
+### 
+plt.plot(times,temperatures,'-')
+###
 plt.show()
 ```
 
@@ -347,7 +362,13 @@ particles = []
 pressures = np.zeros(100, dtype=float)
 times = np.linspace(1, 100, 100)
 
-### YOUR CODE HERE ###
+### 
+create_particles(particles)
+for i in range(100):
+    take_time_step(particles)
+    pressures[i] = pressure
+print('Er zijn niet tijdens elke tijdsstap botsingen tegen de wanden en tijdens sommige tijdstappen zijn er juist veel botsingen tegen de wanden en daar hangt de berekende waarde voor de druk vanaf.')
+###
 
 plt.figure()
 plt.xlabel('Time [step]')
