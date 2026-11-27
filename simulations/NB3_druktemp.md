@@ -235,7 +235,6 @@ def temperature(particles) -> float:
     temp = (v2_gem*m_gem)/(2*k)
     ###
     return temp
-temperature(particles)
 ```
 
 <!-- #region tags=[] -->
@@ -377,7 +376,6 @@ plt.ylabel('Pressure [a.u.]')
 plt.plot(times, pressures, '-r')
 
 plt.show()
-
 ```
 
 <!-- #region tags=[] -->
@@ -396,10 +394,9 @@ Zet je initiële waarden weer terug.
 ```
 <!-- #endregion -->
 
-```python tags=[]
-### YOUR CODE HERE ###
-
-```
+<!-- #region tags=[] -->
+(opdracht 5) Als het volume niet aangepast wordt zouden de deeltjes veel dichter op elkaar komen te zitten.
+<!-- #endregion -->
 
 Een goedkoper alternatief bestaat uit het middelen van de druk over de tijd.
 Fysisch is daar geen echte reden voor, maar ook meetinstrumenten in het laboratorium bepalen hun meetwaarde gedurende een tijdsinterval om hun ruis te verlagen. 
@@ -446,8 +443,19 @@ times = np.linspace(1, N_steps, N_steps)
 
 create_particles(particles)
 
-### YOUR CODE HERE ###
+### 
+for i in range(N_steps):
+    take_time_step(particles)
+    pressures[i] = pressure
 
+plt.figure()
+plt.xlabel('Time [step]')
+plt.ylabel('Pressure [a.u.]')
+
+plt.plot(times, pressures, '-r')
+
+plt.show()
+###
 ```
 
 Met de middeling kun je beter zien wat de gemiddelde waarde voor de druk in dit systeem is. Als dit voor jouw simulatie lastig is kan je de factor `alpha` aanpassen in de functie 'handle_walls`, zodat je over een langere periode het gemiddelde neemt. Hou daarbij wel rekening met de eis in [bovenstaande formule](int_norm)
@@ -458,7 +466,9 @@ We kunnen de gevonden druk nu wel uitdrukken in SI-eenheden met behulp van de vo
 ```
 
 ```{solution} ex-druktemp-7
-### YOUR CODE HERE ###
+### 
+Het model is in 2D terwijl de fietsband in 3D is berekend.
+###
 ```
 
 
@@ -470,7 +480,9 @@ Leg op basis van de vormen die je ziet en de bijbehorende wiskunde uit dat dit e
 ```
 
 ```{solution} ex-druktemp-8
-### YOUR CODE HERE ###
+### 
+De term is kloppend, omdat de druk steeds wordt vermenigvuldigd met een factor $\alpha$, dat is exponentieel. Het is een gemiddelde, omdat de functie voor $P_i$ steeds een deel $\alpha$ van de druk op het te berekenen tijdstip en een deel $(1-\alpha)$ van het vorrige tijdstip neemt. De grootte van factor $\alpha$ bepaald hoe zwaar $P$ meetelt ten opzichte van $P_{i-1}$.
+###
 ```
 
 
@@ -500,7 +512,14 @@ Controleer of je uitkomst overeenkomt met de theorie en verifieer hiermee de cod
 ```
 
 ```python
-### YOUR CODE HERE ###
+### 
+gem_P = np.mean(pressures)
+print('Uit het model blijkt p=',gem_P)
+the_P = (1.0*N*(V_0**2))/(2* BOX_SIZE_0**2)
+print('Uit de formule blijkt p=',the_P)
+print('Deze waarden komen redelijk goed met elkaar overeen.')
+print('(de gegeven waarden zijn niet in SI-eenheden)')
+###
 ```
 
 In [de formule voor de tweedimensionale druk](2d_pressure) kan je de structuur van de ideale gaswet herkennen. 
@@ -513,8 +532,11 @@ Herleid dezelfde formule af voor het driedimensionale geval. Laat zien welke rel
 
 
 ```{solution} ex-druktemp9b
-Geef hier de relatie tussen de constanten...
-### YOUR CODE HERE ###
+### 
+Omdat $v$ nu drie richtingen heeft maar het systeem nog steeds geen voorkeur heeft, geldt: ${v_{x}}^2=\frac{1}{3} v^2$. Daarbij komt er een extra dimensie bij, dus $A(=l^2)$ wordt $V(=Al=l^3)$. dat geeft $P = \frac{mNv^2}{3V}$ voor de druk in drie dimensies.\
+De algemene gaswet : $PV = n\bar{R}T$\
+$PV = \frac{mNv^2}{3}$ daaraan gelijkstellen geeft $n\bar{R}T=\frac{1}{3}mNv^2$. $\frac{mN}{n}=M$ geeft $\frac{\bar{R}}{M}T=\frac{1}{3}v^2$.
+###
 ```
 
 
